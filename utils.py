@@ -1,27 +1,19 @@
 from PIL import Image, ImageDraw, ImageFont
-from io import BytesIO
-from config import Config
+import requests
 
-def create_welcome_image(name, username, user_id, profile_pic_path=None):
-    base = Image.new("RGB", (1280, 720), "#0f0f0f")
+def create_welcome_image(photo_path, name, username, user_id):
+    base = Image.open("default.jpg").convert("RGBA")
+    avatar = Image.open(photo_path).resize((150, 150)).convert("RGBA")
+
+    base.paste(avatar, (30, 30), avatar)
+
     draw = ImageDraw.Draw(base)
+    font = ImageFont.truetype("arial.ttf", 24)
 
-    font_big = ImageFont.truetype("arialbd.ttf", 80)
-    font_small = ImageFont.truetype("arialbd.ttf", 45)
+    draw.text((200, 50), f"Name: {name}", font=font, fill="white")
+    draw.text((200, 90), f"Username: @{username if username else 'N/A'}", font=font, fill="white")
+    draw.text((200, 130), f"User ID: {user_id}", font=font, fill="white")
 
-    draw.text((60, 100), "WELCOME", fill="#ffaa00", font=font_big)
-    draw.text((60, 250), f"NAME :  {name}", fill="#ffffff", font=font_small)
-    draw.text((60, 330), f"USERNAME :  {username}", fill="#ffffff", font=font_small)
-    draw.text((60, 410), f"USER ID :  {user_id}", fill="#ffffff", font=font_small)
-
-    try:
-        pf = Image.open(profile_pic_path or Config.DEFAULT_IMG).resize((300, 300)).convert("RGBA")
-    except:
-        pf = Image.open(Config.DEFAULT_IMG).resize((300, 300)).convert("RGBA")
-
-    base.paste(pf, (900, 200))
-    output = BytesIO()
-    output.name = "welcome.jpg"
-    base.save(output, "JPEG")
-    output.seek(0)
-    return output
+    output_path = f"welcome_{user_id}.png"
+    base.save(output_path)
+    return output_path
