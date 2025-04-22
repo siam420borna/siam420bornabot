@@ -19,4 +19,19 @@ async def welcome(_, message: Message):
         )
         img.close()
 
+# Dummy HTTP server to keep Koyeb free instance alive
+import threading
+import socket
+
+def run_dummy_server():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("0.0.0.0", 8080))
+    s.listen(1)
+    while True:
+        conn, _ = s.accept()
+        conn.sendall(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK")
+        conn.close()
+
+threading.Thread(target=run_dummy_server, daemon=True).start()
+
 app.run()
