@@ -1,19 +1,32 @@
 from PIL import Image, ImageDraw, ImageFont
+from pyrogram.types import User
 import requests
+from io import BytesIO
 
-def create_welcome_image(photo_path, name, username, user_id):
-    base = Image.open("default.jpg").convert("RGBA")
-    avatar = Image.open(photo_path).resize((150, 150)).convert("RGBA")
+async def create_welcome_image(user: User):
+    try:
+        if user.photo:
+            photo = await user.get_profile_photos(limit=1)
+            file = await photo[0].get_file()
+            response = await file.download()
+            pfp = Image.open(response).convert("RGBA")
+        else:
+            raise Exception("No photo")
+    except:
+        pfp = Image.open("default.jpg").convert("RGBA")
 
-    base.paste(avatar, (30, 30), avatar)
+    base = Image.new("RGBA", (800, 400), "white")
+    pfp = pfp.resize((200, 200))
+    base.paste(pfp, (50, 100))
 
     draw = ImageDraw.Draw(base)
-    font = ImageFont.truetype("arial.ttf", 24)
+    font = ImageFont.truetype("arial.ttf", size=40)
 
-    draw.text((200, 50), f"Name: {name}", font=font, fill="white")
-    draw.text((200, 90), f"Username: @{username if username else 'N/A'}", font=font, fill="white")
-    draw.text((200, 130), f"User ID: {user_id}", font=font, fill="white")
+    draw.text((270, 120), f"Welcome {user.first_name}", fill="black", font=font)
+    draw.text((270, 180), f"@{user.username or 'No Username'}", fill="gray", font=font)
+    draw.text((270, 240), f"User ID: {user.id}", fill="blue", font=font)
 
-    output_path = f"welcome_{user_id}.png"
-    base.save(output_path)
-    return output_path
+    output = BytesIO()
+    base.save(output, format="PNG")
+    output.seek(0)
+    return output
