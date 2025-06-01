@@ -1,10 +1,10 @@
 import os
 
 class Config:
-    API_ID = int(os.getenv("API_ID", 12345))
-    API_HASH = os.getenv("API_HASH", "your_api_hash")
-    BOT_TOKEN = os.getenv("BOT_TOKEN", "your_bot_token")
-    MONGODB_URL = os.getenv("MONGODB_URL", "your_mongodb_uri")
+    API_ID = int(os.getenv("API_ID", 20103040))
+    API_HASH = os.getenv("API_HASH", "8c4162dedd5303a8e3fe36257e40d1f6")
+    BOT_TOKEN = os.getenv("BOT_TOKEN", "7909791290:AAHbaeT9PjUeGdUNPs3FJRZjaUStat28V40")
+    MONGODB_URL = os.getenv("MONGODB_URL", "zcqe3zx.mongodb.net/?retryWrites=true&w=majority")
 
     # Default user settings
     DEFAULT_SETTINGS = {
